@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html >
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Balloon up</title>
+
+</head>
+
+<body  onload="init()">
+		
+		<div align="center"> 
+			<canvas id="cvs" width="800" height="800"> 
+			</canvas> 
+		</div> 
+		
+</body>
+
+<script> 
+  var canvas, context; 
+  var background=new Image();
+  var balloon=new Image(); 
+  var x=0;
+  var y=0;
+ 
+ 
+   //initalize
+  function init(){  
+   canvas=document.getElementById("cvs"); 
+   context=canvas.getContext("2d"); 
+   
+   balloon.addEventListener("load", setup, false); 
+   
+   //load Image
+   background.src="map.png";
+   balloon.src="balloon.png";   
+   
+   //initalize  start draw balloon x y point 
+   x=canvas.width/2 -balloon.width/2;
+   y=canvas.height-balloon.height/3;
+  
+  }
+  
+  function setup(){      
+   setInterval(showImg, 150);
+  } 
+  
+  function showImg(){ 
+   // clear canvas
+   context.clearRect (0, 0, canvas.width, canvas.height); 
+   // fill color
+   context.fillStyle = "#A0A0A0"; 
+   // fill Rectangle  (start x poit, start y point , width ,height)
+   context.fillRect (0, 0, canvas.width, canvas.height); 
+   
+	
+   //draw background
+   context.drawImage(background,0,0);  
+   
+   //draw  balloon
+   context.drawImage(balloon,x,y,balloon.width,balloon.height); 
+   
+  
+	//stop at point y<=20
+   if(y>20) {
+			y-=5;
+	}
+ 
+ }    
+  
+</script> 
+
+
+
+</html>
