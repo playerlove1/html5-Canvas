@@ -1,0 +1,28 @@
+<!--HTML5宣告-->
+<!doctype html> 
+<html> 
+	<head>  
+		<meta charset="utf-8">  
+		<title>Javascript OO測試</title> 
+		
+		<script lang="javascript"> 
+		//由於Jacascript 屬於 prototype-based語言  不像其他語言中有class , Jacascipt使用function 來定義class
+		//定義類別car
+		function car(){
+			//在Javascript 並不需要特別宣告Constructor method
+			//以下的內容就是constructor method
+			console.log('Constructor car');
+			//宣告成員
+			this.name="Car_name";	
+		}
+		//實例化
+		var c=new car();
+		//取得實例的屬性
+		console.log(c.name);
+		</script> 
+	</head>
+	
+	<body > 
+	  
+	</body>  
+</html> 

@@ -1,0 +1,74 @@
+<!--HTML5宣告-->
+<!doctype html> 
+<html> 
+	<head>  
+		<meta charset="utf-8">  
+		<title>Canvas測試</title> 
+			
+		<script> 
+		  //宣告Canvas,context
+		  var canvas, context;
+		  //宣告圖片  (圖片為4*4共16個小圖分解所組成)
+		  var person=new Image(); 
+		  var w, h;     //圖片中每個人物的寬及高
+		  var step=0;   //圖片#,其值為0~3 
+		  var cx=100;   //主角的 x 座標 
+		  var cy=50;   //主角的 y 座標
+
+		  //宣告函式init
+		  function init(){ 
+			//定義canvas
+		   canvas=document.getElementById("cvs");
+			//定義context
+		   context=canvas.getContext("2d");
+		   
+		   //載入圖片完成後執行 setup() 方法
+		   person.addEventListener("load", setup, false); 
+		   //載入圖片位址
+		   person.src="person.png"; 
+		   
+		  }    
+		  
+		  //宣告function setup
+		  function setup(){   
+		   //計算主角的寬及高(由於原圖為4*4)
+	
+		   //設定w,h
+		   w=person.width/4; 
+		   h=person.height/4;   
+		   
+		   //設定每隔 0.15 秒即執行 showImg() 一次
+		   setInterval(showImg, 150); 
+		  } 
+		  
+		  //每個 0.15 秒執行一次
+		  function showImg(){ 
+		  
+		   //清除畫布
+		   context.clearRect (0, 0, canvas.width, canvas.height); 
+		   
+		   //填背景色
+		   context.fillStyle = "#A0A0A0"; 
+		   context.fillRect (0, 0, canvas.width, canvas.height); 
+		   
+		   //drawImage(圖片,擷取起始點x座標,擷取起始點y座標,擷取圖片的寬,擷取圖片的高,將擷取圖片至於contex的x座標,將擷取圖片至於contex的y座標,要縮放的大小x,要縮放的大小y)
+		   //畫圖
+		   context.drawImage(perosn, step*w, 50, w, h, cx, cy, w, h); 
+		   
+		   //換下一個子圖(更換擷取起始點的座標)
+		   step++; 
+		   step%=4;   
+		   
+		   //移動人物於context的x座標
+			cx-=4;  
+		   if(cx <= 0)  cx =canvas.width;         
+		} 
+		</script> 
+	</head>
+		<!--當載入body時觸發 onLoad的javascript function init()-->
+	<body onLoad="init()" > 
+	  <div align="center"> 
+		<canvas id="cvs" width="800" height="600"> </canvas> 
+	  </div>
+	</body>  
+</html> 

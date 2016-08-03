@@ -1,0 +1,357 @@
+<!--HTML5宣告-->
+<!doctype html> 
+<html> 
+	<head> 
+		<meta charset="utf-8">
+		<title> 畫布測試 </title> 
+
+		<script> 
+		//======================================
+		//  定義廣域變數, 在各個function()中皆可取用
+		//======================================
+
+		//宣告一個尚未生成內容的畫布物件
+		var myContext;
+
+		//宣告一個尚未生成內容的地圖物件
+		var myMap;
+
+		//宣告一個尚未生成內容的人物
+		var sprite; 
+
+		//判斷是否圖片都已讀入(目前有2個圖檔需讀入)
+		var imageCnt=2;
+
+
+
+		//---------------------------------------------------------
+		// 畫布的建構元函式
+		// 生成一個畫布物件, 其子物件可由getContext()方法取得繪圖介面
+		// 在程式中的 "this.", 指 "這一個物件中的..."
+		//---------------------------------------------------------
+		function MyContext(){
+			//定義canvas
+			this.canvas=document.getElementById("cvs");
+			//定義context
+			this.context=this.canvas.getContext("2d");
+			
+			// 取得畫布
+			this.getContext=function(){
+				return this.context;
+			}
+			
+			// 清除畫布
+			this.clearScreen=function(){
+				this.context.clearRect (0, 0, this.canvas.width, this.canvas.height);
+				
+				// 填背景色
+				this.context.fillStyle = "#A0A0A0";
+				this.context.fillRect (0, 0, this.canvas.width, this.canvas.height);
+			}
+			
+			
+			//取出畫布的寬/高
+			this.getCanvasWidth=function(){return this.canvas.width;}
+			this.getCanvasHeight=function(){return this.canvas.height;}	
+		}
+
+
+
+
+
+		//---------------------------------------------------------
+		// 主角圖片的建構元函式
+		// 生成一個主角圖片物件, 將載入的圖片放在物件中的image變數內.
+		// 在程式中的 "this.", 指 "這一個物件中的..."
+		//---------------------------------------------------------
+		function SpriteImg(){	
+			this.image=new Image();
+			this.image.src="person-8.png";
+				
+
+			//如果圖片載入完成, 執行setup()函式
+			this.image.addEventListener("load", imageLoaded, false); 
+		}
+			
+
+
+
+		//---------------------------------------------------------
+		// 主角的建構元函式
+		// 傳入:圖片編號, x座標, y座標, 方向
+		// 將生成一個主角物件, 另外包括draw()方法.
+		// 在程式中的 "this.", 指 "這一個物件中的..."
+		//---------------------------------------------------------
+		var MySprite=function(cx, cy, dct){
+			this.step=0;
+			this.cx=cx;
+			this.cy=cy;
+			this.dct=dct;
+			
+			
+				
+			
+			this.draw=function(){
+				 // 畫圖, 其中this.context是取用父親(myContext)的context成員 
+				 
+				 
+				//由於圖片大小為 728*920 又個為等大小圖人物圖 構成8*8的人物圖  91*115 為單一人物的像素大小
+				
+				//參數     圖, x起始座標,y起始座標,取圖的width,取圖的height,於畫布上x座標,於畫布上y座標,呈現在畫布上的width,呈現在畫布上的height
+				
+				 this.context.drawImage(this.image, this.step*91, this.dct*115, 91, 115, this.cx, this.cy, 91, 115);
+			
+				 // 換下一個子圖
+				 //每次遞增 再取其餘數 讓人物單一方向的移動連貫
+				 this.step++;
+				 this.step%=8;  
+				 
+		   
+				 // 移動主角座標
+				 
+				  //人物於畫布上的y座標增加  即往下走
+				 if(this.dct==0){this.cy+=8; } 
+				 //人物於畫布上的x座標減少  即往左走
+				 if(this.dct==1){this.cx-=8;  }  
+				 //人物於畫布上的x座標增加  即往右走
+				 if(this.dct==2){this.cx+=8;   }  
+				 //人物於畫布上的y座標減少  即往上走
+				 if(this.dct==3){this.cy-=8;  }   
+				 //左下
+				  if(this.dct==4){this.cx-=8;this.cy+=8;}   //人物於畫布上的x減少 y 增加  即往左下走
+				 //右下
+				 if(this.dct==5){this.cx+=8;this.cy+=8;}   //人物於畫布上的x增加 y 增加  即往右下走
+				 //左上
+				 if(this.dct==6){this.cx-=8;this.cy-=8;}  //人物於畫布上的x減少 y 減少  即往左上走
+				 //右上
+				 if(this.dct==7){this.cx+=8;this.cy-=8;}  //人物於畫布上的x增加 y 減少  即往右上走
+				 
+				 //check();
+				 switch (this.dct){//依據原先方向作選擇
+					case 0:  //下
+						if(this.cy> 640 + 115/2 ){
+								this.cy = 0 - 115/2;
+						} 
+						break;
+					case 1: //左
+						if(this.cx < 0- 91/2){
+								this.cx = 640 + 91/2;
+								}
+						break;
+					case 2: //右
+						if(this.cx > 640 + 91/2){
+								this.cx = 0 - 91/2;
+								}
+						break;
+					case 3:  //上
+						if(this.cy < 0 - 115/2){
+								this.cy = 640 + 115/2;
+								}
+						break;
+					case 4: //左下
+						if(  this.cx < 0- 91/2 || this.cy> 640 + 115/2){
+								this.cy =0 - 115/2;
+								this.cx = 640 + 91/2;
+						} 
+						break;
+					case 5: //右下
+						if(this.cx > 640 + 91/2 ||  this.cy> 640 + 115/2){
+								this.cx = 0 - 91/2;
+								this.cy = 0 - 115/2;
+								}
+						
+						break;
+					case 6: //左上
+						if(this.cx < 0- 91/2 || this.cy < 0 - 115/2){
+								this.cx = 640 + 91/2;
+								this.cy = 640 + 115/2;
+								}
+						break;
+					case 7: //右上
+						if(this.cx > 640 + 91/2 || this.cy < 0 - 115/2){
+								this.cx = 0 - 91/2;
+								this.cy = 640 + 115/2;
+								}
+						break;
+					
+				}
+			}
+			
+			
+			
+			//確認是否超出邊界的function
+			function check(){
+				
+				
+			}
+			
+			//設定主角的方向
+			this.setDct=function(dct){this.dct=dct;}
+		}  
+
+
+
+
+
+
+		//---------------------------------------------------------
+		// 地圖的建構元函式
+		//---------------------------------------------------------
+		function Map(){
+			var image=new Image();
+			image.src="back.png";
+				
+
+			//如果圖片載入完成, 執行setup()函式
+			image.addEventListener("load", imageLoaded, false); 
+			
+			
+			//顯示地圖
+			this.draw=function(){
+			
+				//由於素材圖大小為 512*256  為8*6個圖案  每個大小為64*64
+				
+				//地圖製作
+				for(i=0;i<10;i++)
+					for(j=0;j<10;j++)
+					this.context.drawImage(image,128,0,64,64,i*64,j*64,64,64);
+					
+			} 
+		}    
+
+
+
+
+		//=================
+		//  程式一開始的設定
+		//=================
+		function init(){ 	
+			//生成畫布物件   
+			myContext=new MyContext();
+
+			//以後由MySpriteImg建構元函式建立的主角圖片物件, 都可以使用myContext物件內容
+			SpriteImg.prototype=myContext;
+			
+			//以後由MySprite建構元函式建立的主角物件, 都可以使用同一個SpriteImg()建立的物件
+			MySprite.prototype=new SpriteImg();
+
+
+			//以後由Map建構元函式建立的地圖物件, 都可以使用myContext物件內容
+			Map.prototype=myContext;
+
+				
+			//生成地圖物件
+			myMap=new Map();
+		}   
+
+
+
+		//===========================================
+		//  檢查所有圖片是否均已載入?若是, 執行setup()
+		//===========================================
+		function imageLoaded(){
+			imageCnt--;
+			
+			if(imageCnt==0){
+				setup();
+			}
+		}
+
+
+
+
+		//====================
+		//  完成載入圖片後執行
+		//====================
+		function setup(){	
+			  
+			  //隨機生成主角位置
+			  sprite=new MySprite(parseInt(Math.random()*640), parseInt(Math.random()*640), parseInt(Math.random()*4));
+			  
+			  
+			  //上下左右
+			  var keymap = {37:false,38:false,39:false,40:false};
+			  
+			  var count=0;
+			  
+			//****如果使用者按下鍵盤****	
+			document.onkeydown=document.onkeyup=function(e){
+			
+					e = e|| event; //to deal with IE
+					keymap[e.keyCode] = e.type == 'keydown'; //判斷是否為keydown 若是 則為true 若否 則為false
+			
+				 //計算幾個鍵按下
+				for(var i in keymap){ 
+					if(keymap[i]){ count++;}
+					console.log(keymap[i]);
+				}
+				
+				console.log(count);
+				 
+				 if(count == 2){
+				 
+						//左下
+						if(keymap[37]&&keymap[40]) {sprite.setDct(4);}
+						
+						//右下
+						if(keymap[39]&&keymap[40]) {sprite.setDct(5);}
+									
+						//左上
+						if(keymap[37]&&keymap[38]) {sprite.setDct(6);}
+						
+						//右上
+						if(keymap[39]&&keymap[38]) {sprite.setDct(7);}
+				 
+				 
+				 }else{
+					//如果按下
+					if(e.keyCode==40){sprite.setDct(0);}  
+				
+					//如果按左
+					if(e.keyCode==37){sprite.setDct(1);} 
+			   
+					//如果按右
+					if(e.keyCode==39){sprite.setDct(2);}  
+
+					//如果按上
+					if(e.keyCode==38){sprite.setDct(3);} 
+				}
+				
+				count=0;
+
+			} 
+			
+			//設定每隔0.15秒即執行showImg()一次
+			setInterval(showImg, 150);
+		}
+
+
+
+		//=================================
+		//  動畫的主流程, 每隔0.15秒執行一次
+		//=================================
+		function showImg(){
+			// 清除畫布
+			myContext.clearScreen();
+
+			// 畫地圖
+			myMap.draw();
+		 
+			// 繪主角     
+				sprite.draw();	
+			
+		}
+
+		</script> 
+
+	</head> 
+
+
+<body onLoad="init()"> 
+    <div align="center"> 
+        <canvas id="cvs" width="640" height="640"> 
+        </canvas> 
+    </div> 
+</body>
+
+</html>
